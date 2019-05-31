@@ -4,14 +4,14 @@
 import subprocess
 
 # update and install java
-print ('Updating system and installing Java :')
+print 'Updating system and installing Java :'
 subprocess.call("sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get install -y openjdk-8-jdk", shell=False)
 
 if subprocess.returncode != 0 :
-    print ('Error while installing java.. ')
+    print 'Error while installing java.. '
     sys.exit(0)
 
-print ('Welcome!')
+
 
 # "1.14.2" "https://launcher.mojang.com/v1/objects/808be3869e2ca6b62378f9f4b33c946621620019/server.jar"
 # "1.14.1" "https://launcher.mojang.com/v1/objects/ed76d597a44c5266be2a7fcd77a8270f1f0bc118/server.jar"
