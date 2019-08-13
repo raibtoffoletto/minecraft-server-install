@@ -6,20 +6,18 @@
 > USERNAME before the install. If you don't know it, then have a look at the usercache.json file after
 > login in and reinstall the server.
 >
-> ** Mind your typos! **
+> **Mind your typos!**
 >
 > Versions available from 1.10 to 1.14.4 (latest at the moment)
 
-### Dependencies:
+### Server initial dependencies:
 * git
 * python3
 * systemd
 
 ### Cloning and Running:
 ```bash
-$
-$
-$
+$ git clone https://github.com/raibtoffoletto/minecraft-server-install.git
+$ cd minecraft-server-install
+$ python3 minecraft-server-script.py
 ```
-
-
