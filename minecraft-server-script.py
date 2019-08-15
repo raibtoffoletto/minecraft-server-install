@@ -1,4 +1,28 @@
 #!/usr/bin/env python3
+
+#####################################################################
+#                                                                   #
+# Copyright (c) 2019 Raí B. Toffoletto (https://toffoletto.me)      #
+#                                                                   #
+# This program is free software; you can redistribute it and/or     #
+# modify it under the terms of the GNU General Public               #
+# License as published by the Free Software Foundation; either      #
+# version 2 of the License, or (at your option) any later version.  #
+#                                                                   #
+# This program is distributed in the hope that it will be useful,   #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of    #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU #
+# General Public License for more details.                          #
+#                                                                   #
+# You should have received a copy of the GNU General Public         #
+# License along with this program; if not, write to the             #
+# Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,  #
+# Boston, MA 02110-1301 USA                                         #
+#                                                                   #
+# Authored by: Raí B. Toffoletto <rai@toffoletto.me>                #
+#                                                                   #
+#####################################################################
+
 import os, sys
 import shutil
 import subprocess
@@ -70,11 +94,6 @@ else:
 
 print (' .. copying server.jar')
 shutil.copy2 (os.path.join (current_folder, 'server.jar'), server_folder)
-
-print (' .. copying coordinates.zip')
-datapack_folder = os.path.join (server_folder, 'world/datapacks')
-os.makedirs (datapack_folder)
-shutil.copy2 (os.path.join (current_folder, 'coordinates.zip'), datapack_folder)
 
 print (' .. creating eula.txt')
 eula_file = open (os.path.join (server_folder, 'eula.txt'), 'w')

@@ -1,8 +1,8 @@
 # minecraft-server-install
-> Simple script to help install a vanilla minecraft server in debian/ubuntu systems (**Ubuntu 18.04 LTS** recommended).
-> It installs a version of Batty's coordinates by default.
+> Simple script to help install a vanilla minecraft server in debian/ubuntu systems
+> (**Ubuntu 18.04 LTS** recommended).
 >
-> To  operate the server properly as an admin, be sure to know your minecraft UUID and your exact
+> To  operate the minecraftserver properly as an admin, be sure to know your minecraft UUID and your exact
 > USERNAME before the install. If you don't know it, then have a look at the usercache.json file after
 > login in and reinstall the server.
 >
