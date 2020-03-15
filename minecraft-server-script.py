@@ -20,7 +20,12 @@ subprocess.check_call (['sudo', 'apt-get', 'install', '-y', 'openjdk-8-jdk', 'wg
 print ('\n \n Preparations done. \n')
 server_version = input (' Please, select the minecraft version to install (i.e. 1.14.2): ')
 
+# Main list mantained by https://mcversions.net/
+
 server_url = {
+    '1.15.2' : 'https://launcher.mojang.com/v1/objects/bb2b6b1aefcd70dfd1892149ac3a215f6c636b07/server.jar',
+    '1.15.1' : 'https://launcher.mojang.com/v1/objects/4d1826eebac84847c71a77f9349cc22afd0cf0a1/server.jar',
+    '1.15' : 'https://launcher.mojang.com/v1/objects/e9f105b3c5c7e85c7b445249a93362a22f62442d/server.jar',
     '1.14.4' : 'https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar',
     '1.14.3' : 'https://launcher.mojang.com/v1/objects/d0d0fe2b1dc6ab4c65554cb734270872b72dadd6/server.jar',
     '1.14.2' : 'https://launcher.mojang.com/v1/objects/808be3869e2ca6b62378f9f4b33c946621620019/server.jar',
