@@ -8,7 +8,7 @@
 >
 > **Mind your typos!**
 >
-> Versions available from 1.10 to 1.14.4 (latest at the moment)
+> Versions available from 1.10 to 1.15.2
 
 ### Server initial dependencies:
 * git
