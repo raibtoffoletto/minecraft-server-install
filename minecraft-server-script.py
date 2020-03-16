@@ -116,7 +116,7 @@ server_url = {
     '1.10' : 'https://launcher.mojang.com/v1/objects/a96617ffdf5dabbb718ab11a9a68e50545fc5bee/server.jar'
 }
 
-wget_server = subprocess.Popen (['wget', server_url.get (server_version)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+wget_server = subprocess.Popen (['wget','--no-check-certificate','-c', server_url.get (server_version)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 loading_cmd ('Getting minecraft-server.jar', wget_server)
 
 print ("\n \n Creating server folder and installing files. \n")
@@ -125,9 +125,9 @@ server_folder = os.path.join (os.getenv ("HOME"), '.minecraft-server')
 
 if not os.path.exists (server_folder):
     os.makedirs (server_folder)
-    print (" Folder', server_folder, 'created.")
+    print (" Folder", server_folder, "created.")
 else:
-    print (" Folder', server_folder, 'alread exists... cleaning-up!\n")
+    print (" Folder", server_folder, "alread exists... cleaning-up!\n")
     for file in os.listdir (server_folder):
         file_path = os.path.join (server_folder, file)
         try:
