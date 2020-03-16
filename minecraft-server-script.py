@@ -23,7 +23,7 @@
 #                                                                   #
 #####################################################################
 
-import os, sys
+import os, sys, time
 import shutil
 import subprocess
 
@@ -54,10 +54,10 @@ def ask_question (message, answers = [], strict = False):
             user_input = (input (message)).lower ().strip ()
         return user_input
 
-first_alert = ask_question (" This script will install a new minecraft server\n' \
-                    + ' in your ~/.minecraft-server folder.\n' \
-                    + ' ** ANY DATA IN THIS DIRECTORY WILL BE DESTROYED **\n\n' \
-                    + ' -- Would you like to proceed? [y/n]:", ['y','n'], True)
+first_alert = ask_question (" This script will install a new minecraft server\n" \
+                    + " in your ~/.minecraft-server folder.\n" \
+                    + " ** ANY DATA IN THIS DIRECTORY WILL BE DESTROYED **\n\n" \
+                    + " -- Would you like to proceed? [y/n]:", ['y','n'], True)
 
 if first_alert.lower ().strip () != "y":
     print ("\n Exiting installer ...")
