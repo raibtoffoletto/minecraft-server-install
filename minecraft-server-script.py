@@ -27,22 +27,69 @@ import os, sys
 import shutil
 import subprocess
 
-first_alert = input (' This script will install a new minecraft server\n' \
+def loading_cmd (message,waiting_cmd):
+    while waiting_cmd.poll () is None:
+        chars = "|/—\\"
+        for char in chars:
+            time.sleep (0.3)
+            sys.stdout.write ('\r ' + message + ' ' + char)
+            sys.stdout.flush ()
+    if waiting_cmd.returncode > 0:
+        print ('\n Error while running command:')
+        print (waiting_cmd.stderr.read ().decode ())
+        sys.exit (1)
+    sys.stdout.write ('\r ' + message + ', done!\n')
+
+def ask_question (message, answers = [], strict = False):
+    user_input = (input (message)).lower ().strip ()
+    if len(answers) != 0:
+        if strict:
+            while not user_input in answers:
+                user_input = (input (message)).lower ().strip ()
+            return user_input
+
+        return (user_input if user_input != "" else answers[0])
+    else:
+        while user_input == "":
+            user_input = (input (message)).lower ().strip ()
+        return user_input
+
+first_alert = ask_question (" This script will install a new minecraft server\n' \
                     + ' in your ~/.minecraft-server folder.\n' \
                     + ' ** ANY DATA IN THIS DIRECTORY WILL BE DESTROYED **\n\n' \
-                    + ' -- Would you like to proceed? [y/n]:')
+                    + ' -- Would you like to proceed? [y/n]:", ['y','n'], True)
 
-if first_alert.lower ().strip () != 'y':
-    print ('\n Exiting installer ...')
+if first_alert.lower ().strip () != "y":
+    print ("\n Exiting installer ...")
     sys.exit (0)
 
-print ('\n Updating system and installing Java : \n ')
+print ("\n Updating system and installing Java : \n ")
 subprocess.check_call (['sudo', 'apt-get', 'update'])
 subprocess.check_call (['sudo', 'apt-get', 'dist-upgrade', '-y'])
 subprocess.check_call (['sudo', 'apt-get', 'install', '-y', 'openjdk-8-jdk', 'wget'])
 
-print ('\n \n Preparations done. \n')
-server_version = input (' Please, select the minecraft version to install (i.e. 1.15.2): ')
+print ("\n \n Preparations done. \n")
+server_version = ask_question (" Please, select the minecraft version to install (i.e. 1.15.2): ",
+                ['1.15.2',
+                '1.15.1',
+                '1.15',
+                '1.14.4',
+                '1.14.3',
+                '1.14.2',
+                '1.14.1',
+                '1.14',
+                '1.13.2',
+                '1.13.1',
+                '1.13',
+                '1.12.2',
+                '1.12.1',
+                '1.12',
+                '1.11.2',
+                '1.11.1',
+                '1.11',
+                '1.10.2',
+                '1.10.1',
+                '1.10'], True)
 
 # Main list mantained by https://mcversions.net/
 
@@ -69,23 +116,18 @@ server_url = {
     '1.10' : 'https://launcher.mojang.com/v1/objects/a96617ffdf5dabbb718ab11a9a68e50545fc5bee/server.jar'
 }
 
-wget_url = server_url.get (server_version, 'invalid')
+wget_server = subprocess.Popen (['wget', server_url.get (server_version)], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+loading_cmd ('Getting minecraft-server.jar', wget_server)
 
-if wget_url == 'invalid':
-    print ('\n Invalid server version... aborting')
-    sys.exit (0)
-
-subprocess.check_call (['wget', wget_url])
-
-print ('\n \n Creating server folder and installing files. \n')
+print ("\n \n Creating server folder and installing files. \n")
 current_folder = os.getcwd ()
 server_folder = os.path.join (os.getenv ("HOME"), '.minecraft-server')
 
 if not os.path.exists (server_folder):
     os.makedirs (server_folder)
-    print (' Folder', server_folder, 'created.')
+    print (" Folder', server_folder, 'created.")
 else:
-    print (' Folder', server_folder, 'alread exists... cleaning-up!\n')
+    print (" Folder', server_folder, 'alread exists... cleaning-up!\n")
     for file in os.listdir (server_folder):
         file_path = os.path.join (server_folder, file)
         try:
@@ -94,18 +136,23 @@ else:
             elif os.path.isdir (file_path):
                 shutil.rmtree (file_path)
         except Exception as e:
-            print ('Error during clean-up :', e)
-            sys.exit (0)
+            print ("Error during clean-up : ", e)
+            sys.exit (1)
 
-print (' .. copying server.jar')
+print (" .. copying server.jar")
 shutil.copy2 (os.path.join (current_folder, 'server.jar'), server_folder)
 
-print (' .. creating eula.txt')
+print (" .. copying coordinates.zip")
+datapack_folder = os.path.join (server_folder, 'world/datapacks')
+os.makedirs (datapack_folder)
+shutil.copy2 (os.path.join (current_folder, 'coordinates.zip'), datapack_folder)
+
+print (" .. creating eula.txt")
 eula_file = open (os.path.join (server_folder, 'eula.txt'), 'w')
 eula_file.write ('eula=true')
 eula_file.close ()
 
-print (' .. creating startup.sh')
+print (" .. creating startup.sh")
 startup_file = open (os.path.join (server_folder, 'startup.sh'), 'w')
 startup_file.write ('#!/bin/bash\n')
 startup_file.write ('java -Xmx3072M -Xms1024M -jar ')
@@ -114,9 +161,9 @@ startup_file.write (' nogui\n')
 startup_file.close ()
 os.chmod (os.path.join (server_folder, 'startup.sh'), 0o755)
 
-print (' .. creating ops.json\n')
-ops_uuid = input ('   Please insert your minecraft UUID: ').lower ().strip ()
-ops_username = input ('   Please insert your minecraft username: ').lower ().strip ()
+print (" .. creating ops.json \n")
+ops_uuid = ask_question ('   Please insert your minecraft UUID: ')
+ops_username = ask_question ('   Please insert your minecraft username: ')
 ops_file = open (os.path.join (server_folder, 'ops.json'), 'w')
 ops_file.write ('[\n  {\n    "uuid": "')
 ops_file.write (ops_uuid)
@@ -125,26 +172,27 @@ ops_file.write (ops_username)
 ops_file.write ('",\n    "level": 4,\n    "bypassesPlayerLimit": true\n  }\n]\n')
 ops_file.close ()
 
-print ('\n\n Configuring minecraft world:\n ** Please type all options correctly! **')
-motd = input (' + Server SHORT description: [A Minecraft Server] ').lower().strip()
-server_port = input (' + Server Port: [25565] ').lower ().strip ()
-max_players = input (' + Max number of players alowed: [20] ').lower ().strip ()
-white_list = input (' + Allow only whited listed? [true/false] ').lower ().strip ()
-gamemode = input (' + Gamemode: [survival/creative/adventure/spectator] ').lower ().strip ()
-hardcore = input (' + Hardcore mode? [true/false] ').lower ().strip ()
-difficulty = input (' + Difficulty level: [peaceful/easy/normal/hard] ').lower ().strip ()
+print ("\n\n Configuring minecraft world: ")
+motd = ask_question (' + Server SHORT description: [ex: A Minecraft Server] ')
+server_port = ask_question (' + Server Port: [25565] ', ['25565'])
+max_players = ask_question (' + Max number of players alowed: [20] ', ['20'])
+white_list = ask_question (' + Allow only whited listed? [true/false] ', ['true','false'], True)
+gamemode = ask_question (' + Gamemode: [survival/creative/adventure/spectator] ', ['survival', 'creative', 'adventure', 'spectator'], True)
+hardcore = ask_question (' + Hardcore mode? [true/false] ', ['true','false'], True)
+difficulty = ask_question (' + Difficulty level: [peaceful/easy/normal/hard] ', ['peaceful', 'easy', 'normal', 'hard'], True)
 level_seed = input (' + World Seed: [empty for random] ').lower ().strip ()
-level_type = input (' + World Type: [default/flat/largebiomes/amplified/buffet] ').lower().strip ()
-spawn_monsters = input (' + Spawn Monsters? [true/false] ').lower ().strip ()
-spawn_animals = input (' + Spawn Animals? [true/false] ').lower ().strip ()
-spawn_npcs = input (' + Spawn Villagers? [true/false] ').lower ().strip ()
-generate_structures = input (' + Generate Structures? [true/false] ').lower ().strip ()
-allow_nether = input (' + Allow Nether? [true/false] ').lower ().strip ()
-spawn_protection = input (' + Spawn protection area: [16]').lower ().strip ()
-max_build_height = input (' + Max build height: [256] ').lower ().strip ()
-view_distance = input (' + View Distance: [10] ').lower().strip()
-allow_flight = input (' + Allow in-game flight? [true/false] ').lower ().strip ()
-#Set file:
+level_type = ask_question (' + World Type: [default/flat/largebiomes/amplified/buffet] ', ['default', 'flat', 'largebiomes', 'amplified', 'buffet'], True)
+spawn_monsters = ask_question (' + Spawn Monsters? [true/false] ', ['true','false'], True)
+spawn_animals = ask_question (' + Spawn Animals? [true/false] ', ['true','false'], True)
+spawn_npcs = ask_question (' + Spawn Villagers? [true/false] ', ['true','false'], True)
+generate_structures = ask_question (' + Generate Structures? [true/false] ', ['true','false'], True)
+allow_nether = ask_question (' + Allow Nether? [true/false] ', ['true','false'], True)
+spawn_protection = ask_question (' + Spawn protection area: [16]', ['16'])
+max_build_height = ask_question (' + Max build height: [256] ', ['256'])
+view_distance = ask_question (' + View Distance: [10] ', ['10'])
+allow_flight = ask_question (' + Allow in-game flight? [true/false] ', ['true','false'], True)
+
+# Set file:
 properties = open (os.path.join (server_folder, 'server.properties'), 'w')
 properties.write ('allow-flight='+allow_flight+'\n')
 properties.write ('allow-nether='+allow_nether+'\n')
@@ -192,10 +240,12 @@ properties.write ('enable-query=false\n')
 properties.write ('enable-command-block=false\n')
 properties.close ()
 
-print ('\n\n Creating system services ...\n')
+print ("\n\n Creating system services ...\n")
 systemd_service = open (os.path.join (server_folder, 'mc_server.service'), 'w')
 systemd_service.write ('[Unit]\nDescription=Minecraft Vanilla Server\n\n[Service]\nType=simple\n')
-systemd_service.write ('ExecStart=/bin/bash ')
+systemd_service.write ('WorkingDirectory=')
+systemd_service.write (os.path.join (server_folder))
+systemd_service.write ('\nExecStart=/bin/bash ')
 systemd_service.write (os.path.join (server_folder, 'startup.sh'))
 systemd_service.write ('\n\n[Install]\nWantedBy=multi-user.target\n')
 systemd_service.close ()
@@ -206,4 +256,4 @@ subprocess.check_call (['sudo', 'cp', \
 subprocess.check_call (['sudo', 'chmod', '644', '/etc/systemd/system/mc_server.service'])
 subprocess.check_call (['sudo', 'systemctl', 'enable', 'mc_server.service'])
 
-print ('\n\n Installation done!!\n\n   To start your server just run:\n   sudo systemctl enable mc_server')
+print ("\n\n Installation done!!\n\n   To start your server just run:\n   sudo systemctl start mc_server")
