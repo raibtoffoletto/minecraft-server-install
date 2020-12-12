@@ -69,8 +69,13 @@ subprocess.check_call (['sudo', 'apt-get', 'dist-upgrade', '-y'])
 subprocess.check_call (['sudo', 'apt-get', 'install', '-y', 'openjdk-8-jdk', 'wget'])
 
 print ("\n \n Preparations done. \n")
-server_version = ask_question (" Please, select the minecraft version to install (i.e. 1.15.2): ",
-                ['1.15.2',
+server_version = ask_question (" Please, select the minecraft version to install (1.10 ~ 1.16.4): ",
+                ['1.16.4',
+                '1.16.3',
+                '1.16.2',
+                '1.16.1',
+                '1.16',
+                '1.15.2',
                 '1.15.1',
                 '1.15',
                 '1.14.4',
@@ -94,6 +99,7 @@ server_version = ask_question (" Please, select the minecraft version to install
 # Main list mantained by https://mcversions.net/
 
 server_url = {
+    '1.16.4' : 'https://launcher.mojang.com/v1/objects/35139deedbd5182953cf1caa23835da59ca3d7cd/server.jar',
     '1.16.3' : 'https://launcher.mojang.com/v1/objects/f02f4473dbf152c23d7d484952121db0b36698cb/server.jar',
     '1.16.2' : 'https://launcher.mojang.com/v1/objects/c5f6fb23c3876461d46ec380421e42b289789530/server.jar',
     '1.16.1' : 'https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1463fd304675244077/server.jar',
